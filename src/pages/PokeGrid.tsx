@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PokemonCard from '../components/PokemonCard';
+import Loader from '../components/Loader';
 
 interface Pokemon {
   name: string;
@@ -29,7 +30,7 @@ const PokeGrid = () => {
   }, []);
 
   if (loading) {
-    return <div className="loading-state">Loading...</div>;
+    return <Loader />;
   }
 
   return (
