@@ -31,7 +31,7 @@ describe('PokeGrid', () => {
     const pokemonName = await screen.findByText(/bulbasaur/i);
     expect(pokemonName).toBeInTheDocument();
 
-    const pokemonCards = screen.getAllByRole('link', { name: /view details/i }); // Asumiendo que cada card es un link
+    const pokemonCards = screen.getAllByRole('link', { name: /view details/i });
     expect(pokemonCards).toHaveLength(3);
   });
 });
