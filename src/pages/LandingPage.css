@@ -1,0 +1,26 @@
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #34495e;
+  color: #ecf0f1;
+  text-align: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.landing-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #f1c40f;
+  margin-bottom: 0.5rem;
+}
+
+.landing-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
