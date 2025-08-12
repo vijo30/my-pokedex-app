@@ -1,14 +1,21 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import '../styles/Button.css';
 
 interface ButtonProps {
   onClick: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'landing';
 }
 
-const Button: React.FC<ButtonProps> = ({ onClick, children }) => {
+const Button: React.FC<ButtonProps> = ({
+  onClick,
+  children,
+  variant = 'primary',
+}) => {
+  const className = `btn btn--${variant}`;
+
   return (
-    <button className="reusable-button" onClick={onClick}>
+    <button className={className} onClick={onClick}>
       {children}
     </button>
   );

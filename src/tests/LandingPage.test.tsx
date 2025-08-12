@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import LandingPage from './LandingPage';
+import LandingPage from '../pages/LandingPage';
 import { vi } from 'vitest';
 
 const mockedUseNavigate = vi.fn();

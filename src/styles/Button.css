@@ -1,16 +1,39 @@
-.reusable-button {
-  background-color: #e74c3c;
-  color: white;
+.btn {
   border: none;
-  padding: 1rem 2rem;
-  font-size: 1.5rem;
-  font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
   font-family: 'Inter', sans-serif;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
-.reusable-button:hover {
+.btn--primary {
+  background-color: #e74c3c;
+  color: white;
+}
+.btn--primary:hover {
   background-color: #c0392b;
+}
+
+.btn--landing {
+  background-color: #e74c3c;
+  color: #34495e;
+  border: none;
+  padding: 2rem 4rem;
+  font-size: 6.4rem;
+  font-weight: bold;
+  border-radius: 200px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn--landing:hover {
+  background-color: #f1c40f;
+}
+
+@media (min-width: 768px) {
+  .btn--landing {
+    font-size: 10rem;
+  }
 }
