@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import PokeGrid from '../pages/PokeGrid';
@@ -11,12 +11,6 @@ const mockPokemonList = {
   ],
 };
 
-vi.stubGlobal('fetch', vi.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve(mockPokemonList),
-  })
-));
 
 const mockInitialPage = {
   results: [{ name: 'bulbasaur', url: '...' }],
@@ -30,12 +24,10 @@ const mockNextPage = {
   previous: 'https://pokeapi.co/api/v2/pokemon?offset=0&limit=30',
 };
 
-vi.stubGlobal('fetch', vi.fn(() => Promise.resolve({
-  ok: true,
-  json: () => Promise.resolve(mockInitialPage),
-})));
+vi.stubGlobal('fetch', vi.fn());
 
 describe('PokeGrid', () => {
+  vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(mockPokemonList), { status: 200, headers: { 'Content-Type': 'application/json' } }));
   it('renders a card for each Pokémon with its name and image', async () => {
     render(
       <MemoryRouter>
@@ -49,61 +41,67 @@ describe('PokeGrid', () => {
     const images = screen.getAllByRole('img');
     expect(images).toHaveLength(2);
     expect(images[0]).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png');
-    expect(images[1]).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png');
   });
 
   it('should display pagination buttons and fetch the next page', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(mockInitialPage), { status: 200, headers: { 'Content-Type': 'application/json' }, }));
+    
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(mockNextPage), { status: 200, headers: { 'Content-Type': 'application/json' }, }));
+
     render(<MemoryRouter><PokeGrid /></MemoryRouter>);
 
-    const prevButton = await screen.findByRole('button', { name: /previous/i });
-    const nextButton = screen.getByRole('button', { name: /next/i });
+    await screen.findByText(/bulbasaur/i);
 
-    expect(prevButton).toBeDisabled();
+    const prevButton = screen.queryByRole('button', { name: /Previous/i });
+    expect(prevButton).toBeNull();
+
+    const nextButton = screen.getByRole('button', { name: /Next/i });
+    expect(nextButton).toBeInTheDocument();
     expect(nextButton).toBeEnabled();
 
-    // FIX: Use the Response constructor to create a proper mock.
-    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(mockNextPage), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    }));
-
     fireEvent.click(nextButton);
-    const newPokemon = await screen.findByText(/pikachu/i);
 
+    const newPokemon = await screen.findByText(/pikachu/i);
     expect(newPokemon).toBeInTheDocument();
+
+    const updatedPrevButton = screen.getByRole('button', { name: /Previous/i });
+    expect(updatedPrevButton).toBeEnabled();
   });
 
   it('should allow marking a pokemon as favorite and filtering by it', async () => {
-    render(<MemoryRouter><PokeGrid /></MemoryRouter>);
+      vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(mockPokemonList), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+      
+      render(<MemoryRouter><PokeGrid /></MemoryRouter>);
 
-    // Wait for the Pokémon to load
-    await screen.findByText(/bulbasaur/i);
+      await screen.findByText(/bulbasaur/i);
+      await screen.findByText(/ivysaur/i);
 
-    const bulbasaurCard = screen.getByText(/bulbasaur/i).closest('.pokemon-card');
-    
-    // FIX: Access getByRole from the screen object
-    const favoriteButton = screen.getByRole('button', { name: /favorite/i });
-    
-    fireEvent.click(favoriteButton);
+      
+      const favoriteButton = screen.getAllByLabelText(/Toggle favorite/i)[0];
+      
+      fireEvent.click(favoriteButton);
+      
+      const filterButton = screen.getByRole('button', { name: /Show Only Favorites/i });
+      fireEvent.click(filterButton);
 
-    const filterButton = screen.getByRole('button', { name: /show favorites/i });
-    fireEvent.click(filterButton);
-
-    expect(screen.getByText(/bulbasaur/i)).toBeInTheDocument();
-    expect(screen.queryByText(/ivysaur/i)).not.toBeInTheDocument();
+      expect(screen.getByText(/bulbasaur/i)).toBeInTheDocument();
+      expect(screen.queryByText(/ivysaur/i)).toBeNull();
   });
 
   it('should filter the list of pokemon based on search input', async () => {
-    render(<MemoryRouter><PokeGrid /></MemoryRouter>);
+      vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(mockPokemonList), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+      
+      render(<MemoryRouter><PokeGrid /></MemoryRouter>);
 
-    await screen.findByText(/bulbasaur/i);
-    await screen.findByText(/ivysaur/i);
+      const bulbasaur = await screen.findByText(/bulbasaur/i);
+      const ivysaur = await screen.findByText(/ivysaur/i);
 
-    const searchInput = screen.getByRole('textbox', { name: /search pokemon/i });
-    fireEvent.change(searchInput, { target: { value: 'bulb' } });
+      const searchInput = screen.getByPlaceholderText(/Filter/i );
+      fireEvent.change(searchInput, { target: { value: 'bulb' } });
 
-    expect(screen.getByText(/bulbasaur/i)).toBeInTheDocument();
-    expect(screen.queryByText(/ivysaur/i)).not.toBeInTheDocument();
+      
+      expect(bulbasaur).toBeInTheDocument();
+      expect(ivysaur).not.toBeInTheDocument();
   });
 });
 

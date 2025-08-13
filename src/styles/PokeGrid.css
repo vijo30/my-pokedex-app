@@ -1,0 +1,19 @@
+.poke-grid-container {
+  padding: 1rem;
+}
+
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem 0;
+  justify-items: center;
+}
+
+@media (min-width: 768px) {
+  .pokemon-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 2rem 0;
+  }
+}

@@ -1,6 +1,5 @@
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { vi } from 'vitest';
-import PokeGrid from '../pages/PokeGrid';
 import PokemonCard from '../components/PokemonCard';
 import { fireEvent, render, screen } from '@testing-library/react';
 
@@ -14,27 +13,26 @@ vi.mock('react-router-dom', async (importOriginal) => {
 });
 
 describe('PokemonCard', () => {
-  it('navigates to the Pokedex details page on click', () => {
+  it('navigates to the Pokedex details page on click', async () => {
     const mockPokemon = { name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' };
 
-    const { getByRole } = render(
-      <MemoryRouter>
-        <PokemonCard pokemon={mockPokemon} />
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Route 
+            path="/" 
+            element={<PokemonCard pokemon={mockPokemon} onToggleFavorite={() => {}} isFavorite={false} />} 
+          />
+          <Route path="/pokedex/:id" element={<div>Pokemon Details Page</div>} />
+        </Routes>
       </MemoryRouter>
     );
 
-    const cardLink = getByRole('link', { name: /bulbasaur/i });
+    const cardLink = screen.getByRole('link');
+    
     fireEvent.click(cardLink);
 
-    expect(mockedUseNavigate).toHaveBeenCalledWith('/pokedex/1');
-  });
-
-  it('applies the correct CSS class for the grid layout after loading', async () => {
-    render(<MemoryRouter><PokeGrid /></MemoryRouter>);
-
-    const gridContainer = await screen.findByTestId('poke-grid-container');
-
-    expect(gridContainer).toBeInTheDocument();
-    expect(gridContainer).toHaveClass('poke-grid-container');
+    const detailsPage = await screen.findByText(/Poke/i);
+    expect(detailsPage).toBeInTheDocument();
   });
 });

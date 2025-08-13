@@ -6,7 +6,7 @@ describe('SearchAndFilter', () => {
   it('should call the onSearch function when the input value changes', () => {
     const onSearchMock = vi.fn();
 
-    render(<SearchAndFilter onSearch={onSearchMock} onToggleFavorites={() => {}} filterFavorites={false} />);
+    render(<SearchAndFilter onSearch={onSearchMock} onToggleFavorites={() => { } } filterFavorites={false} searchTerm={''} />);
 
     const searchInput = screen.getByRole('textbox');
     fireEvent.change(searchInput, { target: { value: 'bulba' } });
@@ -17,9 +17,9 @@ describe('SearchAndFilter', () => {
   it('should call onToggleFavorites when the filter button is clicked', () => {
     const onToggleMock = vi.fn();
 
-    render(<SearchAndFilter onSearch={() => {}} onToggleFavorites={onToggleMock} filterFavorites={false} />);
+    render(<SearchAndFilter onSearch={() => { } } onToggleFavorites={onToggleMock} filterFavorites={false} searchTerm={''} />);
 
-    const filterButton = screen.getByRole('button', { name: /favoritos/i });
+    const filterButton = screen.getByRole('button', { name: /favorite/i });
     fireEvent.click(filterButton);
 
     expect(onToggleMock).toHaveBeenCalledTimes(1);
