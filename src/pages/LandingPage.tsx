@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import Button from '../components/Button';
 import '../styles/LandingPage.css';
+import LandingButton from '../components/LandingButton';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const LandingPage = () => {
         <h1 className="landing-title">Pokedex App</h1>
         <h2 className="landing-subtitle">Another front-end app for PokéAPI</h2>
       </div>
-      <Button onClick={handleStartClick} variant="landing">START</Button>
+      <LandingButton onClick={handleStartClick}>START</LandingButton>
     </div>
   );
 };

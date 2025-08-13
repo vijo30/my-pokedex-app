@@ -4,6 +4,7 @@ import Loader from '../components/Loader';
 import type { PokemonDetails } from '../types/pokemon';
 import { formatPokemonValue } from '../utils/format';
 import '../styles/Pokedex.css';
+import BackButton from '../components/BackButton';
 
 const Pokedex = () => {
   const { id } = useParams<{ id: string }>();
@@ -59,25 +60,30 @@ const Pokedex = () => {
   
   const formattedTypes = pokemon.types.map(t => t.type.name).join(', ');
   
-  return (
+ return (
     <div className="pokedex-container">
-      <button onClick={() => navigate(-1)} className="back-button">
-        &#8592; Go Back
-      </button>
+      <div className="back-button-container">
+        <BackButton />
+      </div>
 
       <div className="pokedex-card">
-        <h1 className="pokemon-name">{pokemon.name}</h1>
-        <p className="pokemon-id">Pokémon No: {pokemon.id}</p>
-        <img
-          src={pokemon.sprites.front_default}
-          alt={`${pokemon.name} sprite`}
-          className="pokemon-image"
-        />
-        <div className="pokemon-info">
+        <div className="pokemon-header">
+          <h1 className="pokemon-name">{pokemon.name}</h1>
+          <p className="pokemon-id">Pokémon No: {pokemon.id}</p>
+          <img
+            src={pokemon.sprites.front_default}
+            alt={`${pokemon.name} sprite`}
+            className="pokemon-image"
+          />
+        </div>
+
+        <div className="pokemon-details">
+          <div className="pokemon-info">
+            <p>Type: {formattedTypes}</p>
+            <p>Height (HT): {formatPokemonValue(pokemon.height, 'm')}</p>
+            <p>Weight (WT): {formatPokemonValue(pokemon.weight, 'kg')}</p>
+          </div>
           {description && <p className="pokemon-description">Description: {description}</p>}
-          <p>Types: {formattedTypes}</p>
-          <p>Height (HT): {formatPokemonValue(pokemon.height, 'm')}</p>
-          <p>Weight (WT): {formatPokemonValue(pokemon.weight, 'kg')}</p>
         </div>
       </div>
     </div>
