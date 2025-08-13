@@ -11,7 +11,7 @@ interface PokemonCardProps {
   onToggleFavorite: () => void;
 }
 
-const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isFavorite, onToggleFavorite }) => {
+const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isFavorite, onToggleFavorite }) => {;
   const pokemonId = pokemon.url.split('/')[6];
   const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
 

@@ -4,17 +4,14 @@ import Loader from '../components/Loader';
 import SearchAndFilter from '../components/SearchAndFilter';
 import Pagination from '../components/Pagination';
 import '../styles/PokeGrid.css'
+import type { PokemonBase } from '../types/pokemon';
 
-interface Pokemon {
-  name: string;
-  url: string;
-}
 
 const ITEMS_PER_PAGE = 30;
 
 const PokeGrid = () => {
-  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const [filteredPokemon, setFilteredPokemon] = useState<Pokemon[]>([]);
+  const [pokemonList, setPokemonList] = useState<PokemonBase[]>([]);
+  const [filteredPokemon, setFilteredPokemon] = useState<PokemonBase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);

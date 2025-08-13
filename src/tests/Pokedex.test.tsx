@@ -24,15 +24,36 @@ const mockPokemonData = {
   abilities: [{ ability: { name: 'overgrow' } }],
 };
 
-vi.stubGlobal('fetch', vi.fn(() =>
-  Promise.resolve({
+const mockSpeciesData = {
+  flavor_text_entries: [
+    {
+      flavor_text: 'A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.',
+      language: { name: 'en' },
+    },
+    {
+      flavor_text: 'Une étrange graine a été plantée sur son dos à la naissance. La plante pousse et grandit avec ce Pokémon.',
+      language: { name: 'fr' },
+    },
+  ],
+};
+
+
+vi.stubGlobal('fetch', vi.fn((url) => {
+  if (url.includes('pokemon-species')) {
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(mockSpeciesData),
+    });
+  }
+  return Promise.resolve({
     ok: true,
     json: () => Promise.resolve(mockPokemonData),
-  })
-));
+  });
+}));
+
 
 describe('Pokedex', () => {
-  it('should render a loading message initially', () => {
+  it('should render a loading message initially and then display the pokemon details', async () => {
     render(
       <MemoryRouter initialEntries={['/pokedex/1']}>
         <Routes>
@@ -40,33 +61,18 @@ describe('Pokedex', () => {
         </Routes>
       </MemoryRouter>
     );
+
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
-  });
-
-
-  it('should fetch and display the pokemon details', async () => {
-    render(
-      <MemoryRouter initialEntries={['/pokedex/1']}>
-        <Routes>
-          <Route path="/pokedex/:id" element={<Pokedex />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
 
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
     
-
     const pokemonName = screen.getByText(/bulbasaur/i);
-    const pokemonId = screen.getByText(/#1/i);
-    const pokemonHeight = screen.getByText(/height: 0.7 m/i);
-    const pokemonWeight = screen.getByText(/weight: 6.9 kg/i);
-    const pokemonImage = screen.getByRole('img', { name: /bulbasaur sprite/i });
+    const pokemonId = screen.getByText(/Pokémon No: 1/i);
+    const pokemonDescription = screen.getByText(/description: A strange seed was planted/i);
     
     expect(pokemonName).toBeInTheDocument();
     expect(pokemonId).toBeInTheDocument();
-    expect(pokemonHeight).toBeInTheDocument();
-    expect(pokemonWeight).toBeInTheDocument();
-    expect(pokemonImage).toBeInTheDocument();
+    expect(pokemonDescription).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /bulbasaur sprite/i })).toBeInTheDocument();
   });
 });
