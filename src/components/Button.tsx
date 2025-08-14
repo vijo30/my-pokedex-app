@@ -4,7 +4,7 @@ import '../styles/Button.css';
 interface ButtonProps {
   onClick: () => void;
   children: ReactNode;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'landing';
+  variant?: 'primary' | 'secondary' | 'ghost' ;
   disabled?: boolean;
 }
 
