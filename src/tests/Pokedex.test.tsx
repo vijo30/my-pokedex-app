@@ -68,7 +68,7 @@ describe('Pokedex', () => {
     
     const pokemonName = screen.getByText(/bulbasaur/i);
     const pokemonId = screen.getByText(/Pokémon No: 1/i);
-    const pokemonDescription = screen.getByText(/description: A strange seed was planted/i);
+    const pokemonDescription = screen.getByText(/A strange seed was planted/i);
     
     expect(pokemonName).toBeInTheDocument();
     expect(pokemonId).toBeInTheDocument();

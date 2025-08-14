@@ -21,7 +21,7 @@ describe('PokemonCard', () => {
         <Routes>
           <Route 
             path="/" 
-            element={<PokemonCard pokemon={mockPokemon} onToggleFavorite={() => {}} isFavorite={false} />} 
+            element={<PokemonCard pokemon={mockPokemon} onToggleFavorite={() => { } } isFavorite={false} currentPage={1} />} 
           />
           <Route path="/pokedex/:id" element={<div>Pokemon Details Page</div>} />
         </Routes>

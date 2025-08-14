@@ -1,28 +1,62 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useReducer } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import PokemonCard from '../components/PokemonCard';
 import Loader from '../components/Loader';
 import SearchAndFilter from '../components/SearchAndFilter';
 import Pagination from '../components/Pagination';
-import '../styles/PokeGrid.css'
+import '../styles/PokeGrid.css';
 import type { PokemonBase } from '../types/pokemon';
-
 
 const ITEMS_PER_PAGE = 30;
 
+type State = {
+  searchTerm: string;
+  filterFavorites: boolean;
+};
+
+type Action =
+  | { type: 'SET_SEARCH_TERM'; payload: string }
+  | { type: 'TOGGLE_FAVORITES' };
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'SET_SEARCH_TERM':
+      return { ...state, searchTerm: action.payload };
+    case 'TOGGLE_FAVORITES':
+      return { ...state, filterFavorites: !state.filterFavorites };
+    default:
+      return state;
+  }
+};
+
 const PokeGrid = () => {
+  const { page } = useParams<{ page: string }>();
+  const currentPage = Number(page) || 1;
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [pokemonList, setPokemonList] = useState<PokemonBase[]>([]);
-  const [filteredPokemon, setFilteredPokemon] = useState<PokemonBase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [offset, setOffset] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterFavorites, setFilterFavorites] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const [favorites, setFavorites] = useState<string[]>(
-    JSON.parse(localStorage.getItem('favorites') || '[]')
-  );
+
+  const initialSearchTerm = new URLSearchParams(location.search).get('search') || '';
+  const initialFilterFavorites = new URLSearchParams(location.search).get('favorites') === 'true';
+
+  const [state, dispatch] = useReducer(reducer, {
+    searchTerm: initialSearchTerm,
+    filterFavorites: initialFilterFavorites,
+  });
+
+  const { searchTerm, filterFavorites } = state;
+
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   const fetchPokemonList = useCallback(async (newOffset: number) => {
+    if (filterFavorites) {
+      setLoading(false);
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -38,44 +72,64 @@ const PokeGrid = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filterFavorites]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm) {
+      params.set('search', searchTerm);
+    }
+    if (filterFavorites) {
+      params.set('favorites', 'true');
+    }
+    navigate(`?${params.toString()}`, { replace: true });
+  }, [searchTerm, filterFavorites, navigate]);
 
   useEffect(() => {
     fetchPokemonList(offset);
   }, [offset, fetchPokemonList]);
 
-  useEffect(() => {
-    let listToFilter = pokemonList;
+  const [favorites, setFavorites] = useState<{ id: string; name: string }[]>(
+    JSON.parse(localStorage.getItem('favorites') || '[]')
+  );
 
-    if (filterFavorites) {
-      listToFilter = listToFilter.filter(pokemon => favorites.includes(pokemon.name));
-    }
+  const getFilteredAndDisplayList = (): PokemonBase[] => {
+    let listToFilter = filterFavorites
+      ? favorites.map(fav => ({ name: fav.name, url: `https://pokeapi.co/api/v2/pokemon/${fav.id}/` }))
+      : pokemonList;
 
-    const filtered = listToFilter.filter(pokemon =>
+    return listToFilter.filter(pokemon =>
       pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredPokemon(filtered);
-  }, [pokemonList, searchTerm, filterFavorites, favorites]);
+  };
+  
+  const filteredPokemon = getFilteredAndDisplayList();
 
   const handleNextPage = () => {
     if (hasNextPage) {
-      setOffset(prevOffset => prevOffset + ITEMS_PER_PAGE);
+      const params = new URLSearchParams(location.search);
+      navigate(`/pokegrid/${currentPage + 1}?${params.toString()}`);
     }
   };
+
   const handlePreviousPage = () => {
-    if (offset > 0) {
-      setOffset(prevOffset => prevOffset - ITEMS_PER_PAGE);
+    if (currentPage > 1) {
+      const params = new URLSearchParams(location.search);
+      navigate(`/pokegrid/${currentPage - 1}?${params.toString()}`);
     }
   };
-  const handleToggleFavorite = (pokemonName: string) => {
-    const newFavorites = favorites.includes(pokemonName)
-      ? favorites.filter(fav => fav !== pokemonName)
-      : [...favorites, pokemonName];
+
+  const handleToggleFavorite = (pokemon: PokemonBase) => {
+    const pokemonId = pokemon.url.split('/').filter(Boolean).pop();
+    if (!pokemonId) return;
+
+    const newFavorites = favorites.some(fav => fav.id === pokemonId)
+      ? favorites.filter(fav => fav.id !== pokemonId)
+      : [...favorites, { id: pokemonId, name: pokemon.name }];
     setFavorites(newFavorites);
     localStorage.setItem('favorites', JSON.stringify(newFavorites));
   };
 
-  
   if (loading) {
     return <Loader />;
   }
@@ -83,33 +137,33 @@ const PokeGrid = () => {
   if (error) {
     return <div className="error-message">Error: {error}</div>;
   }
-  
 
   return (
     <div className="poke-grid-container" data-testid="poke-grid-container">
       <SearchAndFilter
         searchTerm={searchTerm}
-        onSearch={setSearchTerm}
-        onToggleFavorites={() => setFilterFavorites(prev => !prev)}
+        onSearch={(term) => dispatch({ type: 'SET_SEARCH_TERM', payload: term })}
+        onToggleFavorites={() => dispatch({ type: 'TOGGLE_FAVORITES' })}
         filterFavorites={filterFavorites}
       />
       {filteredPokemon.length > 0 ? (
         <div className="pokemon-grid">
           {filteredPokemon.map((pokemon) => (
-          <PokemonCard
-            key={pokemon.name}
-            pokemon={pokemon}
-            isFavorite={favorites.includes(pokemon.name)}
-            onToggleFavorite={() => handleToggleFavorite(pokemon.name)}
-          />
-        ))}
+            <PokemonCard
+              key={pokemon.name}
+              pokemon={pokemon}
+              isFavorite={favorites.some(fav => fav.name === pokemon.name)}
+              onToggleFavorite={() => handleToggleFavorite(pokemon)}
+              currentPage={currentPage}
+            />
+          ))}
         </div>
       ) : (
         <div className="no-results-message">No Pokémon found.</div>
       )}
       <Pagination
-        hasPrevious={offset > 0}
-        hasNext={hasNextPage}
+        hasPrevious={currentPage > 1 && !filterFavorites}
+        hasNext={hasNextPage && !filterFavorites}
         onPrevious={handlePreviousPage}
         onNext={handleNextPage}
       />

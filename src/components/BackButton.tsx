@@ -1,17 +1,28 @@
-
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/BackButton.css';
 
 interface BackButtonProps {
   children?: React.ReactNode;
 }
 
-const BackButton: React.FC<BackButtonProps> = ({ children = 'Go Back' }) => {
+const BackButton: React.FC<BackButtonProps> = ({ children = 'Go Back'}) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleGoBack = () => {
+    
+    if (location.state?.fromGrid && typeof location.state.page === 'number') {
+      const page = location.state.page;
+      console.log(page)
+      navigate(`/pokegrid/${page}`);
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
-    <button className="back-button" onClick={() => navigate(-1)}>
+    <button className="back-button" onClick={handleGoBack}>
       &#8592; {children}
     </button>
   );
