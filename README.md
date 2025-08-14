@@ -1,69 +1,54 @@
-# React + TypeScript + Vite
+# Pokedex App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Pokedex App Image](https://placehold.co/800x400/94A3B8/FFFFFF?text=Pokedex%20App)
 
-Currently, two official plugins are available:
+## 📝 Project Description
+Pokedex App is a simple and responsive web application built with React and TypeScript that allows you to browse a list of Pokémon by consuming the PokeAPI. The app includes key features such as pagination, real-time search, and the ability to mark Pokémon as favorites.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Key Features
+* **Pagination:** Navigate through different pages of Pokémon.
+* **Filtering by Name:** Filter the list in real-time by typing in the search bar.
+* **Favorites:** Mark and unmark Pokémon as favorites, which are saved in the browser's localStorage to persist between sessions.
 
-## Expanding the ESLint configuration
+## 🚀 Technologies Used
+**Frontend:**
+* **React:** Main library for the user interface.
+* **Vite:** Development environment and bundling tool.
+* **TypeScript:** Programming language for strict typing.
+* **React Router:** For managing navigation between pages.
+* **CSS:** Basic styles for the interface.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**Testing:**
+* **Vitest:** Unit testing framework.
+* **React Testing Library:** For testing React components.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**API:**
+* **PokeAPI:** Public API used to fetch Pokémon data.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 💻 Installation and Usage
+Follow these steps to get a copy of the project on your local machine and running.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Prerequisites**
+You need to have Node.js and npm installed.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**Steps**
+Clone the repository:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+`git clone https://github.com/vijo30/my-pokedex-app.git`
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+`cd my-pokedex-app`
+
+Install project dependencies:
+
+`npm install`
+
+Start the development server:
+
+`npm run dev`
+
+The application will be available at `http://localhost:5173`.
+
+## ✅ Tests
+The project includes unit tests written with Vitest and React Testing Library. To run them, use the following command:
+
+`npm run test`

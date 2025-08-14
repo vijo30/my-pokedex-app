@@ -17,7 +17,7 @@ const Pokedex = () => {
   const [error, setError] = useState<string | null>(null);
 
   if (!id) {
-    return <div className="error-message">ID de Pokémon no proporcionado.</div>;
+    return <div className="error-message">Pokemon ID not given.</div>;
   }
 
   useEffect(() => {
