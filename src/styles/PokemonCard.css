@@ -9,7 +9,9 @@
   align-items: center;
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 1rem;
+  padding: 1.5rem;
+
+  justify-content: flex-start;
 }
 
 .pokemon-card:hover {
@@ -45,6 +47,11 @@
   text-transform: capitalize;
   color: #34495E;
   margin: 0;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-wrap: break-word;
+  max-width: 150px;
 }
 
 
@@ -61,6 +68,7 @@
     height: 150px;
   }
   .pokemon-grid-name {
+    width: 150px;
     font-size: 2rem;
   }
 }
