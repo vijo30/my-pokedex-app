@@ -14,7 +14,6 @@ const BackButton: React.FC<BackButtonProps> = ({ children = 'Go Back'}) => {
     
     if (location.state?.fromGrid && typeof location.state.page === 'number') {
       const page = location.state.page;
-      console.log(page)
       navigate(`/pokegrid/${page}`);
     } else {
       navigate('/');

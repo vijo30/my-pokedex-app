@@ -39,6 +39,8 @@ const PokeGrid = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasNextPage, setHasNextPage] = useState(true);
+  
+  const [cachedPokemon, setCachedPokemon] = useState<Record<number, PokemonBase[]>>({});
 
   const initialSearchTerm = new URLSearchParams(location.search).get('search') || '';
   const initialFilterFavorites = new URLSearchParams(location.search).get('favorites') === 'true';
@@ -52,9 +54,11 @@ const PokeGrid = () => {
 
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  const fetchPokemonList = useCallback(async (newOffset: number) => {
-    if (filterFavorites) {
+  const fetchPokemonList = useCallback(async (newOffset: number, pageNum: number) => {
+    if (cachedPokemon[pageNum]) {
+      setPokemonList(cachedPokemon[pageNum]);
       setLoading(false);
+      return;
     }
 
     setLoading(true);
@@ -65,14 +69,20 @@ const PokeGrid = () => {
         throw new Error('Pokemon List could not be loaded!');
       }
       const data = await response.json();
-      setPokemonList(data.results);
+      const results = data.results;
+
+      setCachedPokemon(prevCache => ({
+        ...prevCache,
+        [pageNum]: results
+      }));
+      setPokemonList(results);
       setHasNextPage(!!data.next);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [filterFavorites]);
+  }, [cachedPokemon]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -82,12 +92,20 @@ const PokeGrid = () => {
     if (filterFavorites) {
       params.set('favorites', 'true');
     }
-    navigate(`?${params.toString()}`, { replace: true });
-  }, [searchTerm, filterFavorites, navigate]);
+    if (filterFavorites && currentPage > 1) {
+      navigate(`?${params.toString()}`);
+    } else {
+      navigate(`?${params.toString()}`, { replace: true });
+    }
+  }, [searchTerm, filterFavorites, navigate, currentPage]);
 
   useEffect(() => {
-    fetchPokemonList(offset);
-  }, [offset, fetchPokemonList]);
+    if (!filterFavorites) {
+      fetchPokemonList(offset, currentPage);
+    } else {
+      setLoading(false);
+    }
+  }, [offset, fetchPokemonList, filterFavorites, currentPage]);
 
   const [favorites, setFavorites] = useState<{ id: string; name: string }[]>(
     JSON.parse(localStorage.getItem('favorites') || '[]')
@@ -99,7 +117,7 @@ const PokeGrid = () => {
       : pokemonList;
 
     return listToFilter.filter(pokemon =>
-      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+      pokemon && pokemon.name && pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
   

@@ -1,13 +1,35 @@
 .search-filter-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
+  align-items: center;
 }
 
 .search-input {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 400px;
+  padding: 1rem 1.5rem;
   border-radius: 8px;
-  font-size: 1rem;
+  border: 2px solid #BDC3C7;
+  font-size: 1.5rem;
+  background-color: #ECF0F1;
+  color: #34495E;
+}
+
+.search-input::placeholder {
+  color: #7F8C8D;
+}
+
+@media (min-width: 768px) {
+  .search-filter-container {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-input {
+    font-size: 1.2rem;
+  }
 }
