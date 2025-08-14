@@ -1,0 +1,33 @@
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #ecf0f1;
+}
+
+.pokeball-loader {
+  width: 100px;
+  height: 100px;
+  background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png');
+  background-size: cover;
+  animation: spin 1.2s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-container p {
+  font-size: 1.5rem;
+  color: #333;
+  font-family: 'Inter', sans-serif;
+  font-weight: bold;
+}

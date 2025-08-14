@@ -1,4 +1,3 @@
-// src/components/BackButton.test.tsx
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import BackButton from '../components/BackButton';

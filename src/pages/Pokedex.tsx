@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Loader from '../components/Loader';
 import type { PokemonDetails } from '../types/pokemon';
 import { formatPokemonValue } from '../utils/format';
 import '../styles/Pokedex.css';
 import BackButton from '../components/BackButton';
+import TypeBadge from '../components/TypeBadge';
+import { typeColors } from '../utils/colors';
 
 const Pokedex = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [pokemon, setPokemon] = useState<PokemonDetails | null>(null);
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,34 +59,43 @@ const Pokedex = () => {
     return <div className="error-message">{error}</div>;
   }
   
-  const formattedTypes = pokemon.types.map(t => t.type.name).join(', ');
+  const mainType = pokemon.types[0].type.name;
+  const borderColor = typeColors[mainType.toLowerCase()] || '#808080';
   
  return (
     <div className="pokedex-container">
       <div className="back-button-container">
         <BackButton />
       </div>
-
-      <div className="pokedex-card">
-        <div className="pokemon-header">
-          <h1 className="pokemon-name">{pokemon.name}</h1>
-          <p className="pokemon-id">Pokémon No: {pokemon.id}</p>
-          <img
-            src={pokemon.sprites.front_default}
-            alt={`${pokemon.name} sprite`}
-            className="pokemon-image"
-          />
-        </div>
-
-        <div className="pokemon-details">
-          <div className="pokemon-info">
-            <p>Type: {formattedTypes}</p>
-            <p>Height (HT): {formatPokemonValue(pokemon.height, 'm')}</p>
-            <p>Weight (WT): {formatPokemonValue(pokemon.weight, 'kg')}</p>
+      <div className='pokedex-info-container'>
+        <div className="pokedex-card">
+          <div className="pokemon-header">
+            <div className="pokemon-image-container">
+              <img
+                src={pokemon.sprites.front_default}
+                alt={`${pokemon.name} sprite`}
+                className="pokemon-image"
+                style={{ borderColor: borderColor }}
+              />
+            </div>
           </div>
-          {description && <p className="pokemon-description">Description: {description}</p>}
+          <div className="pokemon-details">
+            <h1 className="pokemon-name">{pokemon.name}</h1>
+            <p className="pokemon-id">Pokémon No: {pokemon.id}</p>
+            <div className="type-badges-container">
+              {pokemon.types.map(t => (
+                <TypeBadge key={t.type.name} type={t.type.name} />
+              ))}
+            </div>
+            <div className="pokemon-info">
+              <p>Height (HT): {formatPokemonValue(pokemon.height, 'm')}</p>
+              <p>Weight (WT): {formatPokemonValue(pokemon.weight, 'kg')}</p>
+            </div>
+            {description && <p className="pokemon-description">{description}</p>}
+          </div>
         </div>
       </div>
+      
     </div>
   );
 };

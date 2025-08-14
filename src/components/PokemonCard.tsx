@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import FavoriteButton from './FavoriteButton';
+import '../styles/PokemonCard.css'
 
 interface PokemonCardProps {
   pokemon: {
@@ -18,8 +19,8 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isFavorite, onToggle
   return (
     <div className="pokemon-card">
       <Link to={`/pokedex/${pokemonId}`} className="pokemon-card-link">
-        <img src={imageUrl} alt={pokemon.name} className="pokemon-image" />
-        <h3 className="pokemon-name">{pokemon.name}</h3>
+        <img src={imageUrl} alt={pokemon.name} className="pokemon-grid-image" />
+        <h3 className="pokemon-grid-name">{pokemon.name}</h3>
       </Link>
       <FavoriteButton isFavorite={isFavorite} onClick={onToggleFavorite} />
     </div>

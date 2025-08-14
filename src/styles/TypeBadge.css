@@ -1,0 +1,18 @@
+.type-badge {
+  display: inline-block;
+  padding: 0.6rem 1.3rem;
+  border-radius: 999px;
+  color: white;
+  font-weight: bold;
+  text-transform: capitalize;
+  font-size: 1.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .type-badge {
+    padding: 0.9rem 1.6rem;
+    font-size: 3.9rem;
+  }
+}

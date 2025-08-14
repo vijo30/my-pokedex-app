@@ -1,9 +1,11 @@
 import '../styles/Loader.css';
+import React from 'react';
 
-const Loader = () => {
+const Loader: React.FC = () => {
   return (
     <div className="loader-container">
-      <p>Loading...</p>
+      <div className="pokeball-loader" />
+      <p>Loading Pokédex...</p>
     </div>
   );
 };
